@@ -1,0 +1,42 @@
+﻿name: Online Store Backend CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'online-store-backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'online-store-backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.15'
+          cache: pip
+          cache-dependency-path: online-store-backend/requirements*.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+        working-directory: online-store-backend
+
+      - name: Run automated tests
+        run: python -m pytest -v
+        working-directory: online-store-backend
