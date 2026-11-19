@@ -1,0 +1,33 @@
+name: Online Store CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Validate and Build Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Create temporary environment file
+        run: |
+          echo "MYSQL_HOST=mysql" > .env
+          echo "MYSQL_PORT=3306" >> .env
+          echo "MYSQL_DATABASE=online_store" >> .env
+          echo "MYSQL_USER=root" >> .env
+          echo "MYSQL_PASSWORD=ci_dummy_password" >> .env
+
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+
+      - name: Build Docker images
+        run: docker compose build
